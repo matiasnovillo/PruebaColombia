@@ -3,6 +3,8 @@ using PruebaColombia.Areas.CMSCore.Entities;
 using PruebaColombia.Areas.CMSCore.Entities.EntitiesConfiguration;
 using PruebaColombia.Areas.BasicCore.Entities.EntitiesConfiguration;
 using PruebaColombia.Areas.BasicCore.Entities;
+using PruebaColombia.Areas.PruebaColombia.Entities.EntitiesConfiguration;
+using PruebaColombia.Areas.PruebaColombia.Entities;
 
 namespace PruebaColombia.DBContext
 {
@@ -18,6 +20,12 @@ namespace PruebaColombia.DBContext
         public DbSet<Parameter> Parameter { get; set; }
 
         //PruebaColombia
+        public DbSet<Dispensador> Dispensador { get; set; }
+        public DbSet<DispensadorManguera> DispensadorManguera { get; set; }
+        public DbSet<Precio> Precio { get; set; }
+        public DbSet<Producto> Producto { get; set; }
+        public DbSet<ProductoTipo> ProductoTipo { get; set; }
+        public DbSet<ProductoUnidad> ProductoUnidad { get; set; }
 
         public PruebaColombiaContext(IConfiguration configuration)
         {
@@ -65,6 +73,12 @@ namespace PruebaColombia.DBContext
                 modelBuilder.ApplyConfiguration(new ParameterConfiguration());
 
                 //PruebaColombia
+                modelBuilder.ApplyConfiguration(new DispensadorConfiguration());
+                modelBuilder.ApplyConfiguration(new DispensadorMangueraConfiguration());
+                modelBuilder.ApplyConfiguration(new PrecioConfiguration());
+                modelBuilder.ApplyConfiguration(new ProductoConfiguration());
+                modelBuilder.ApplyConfiguration(new ProductoTipoConfiguration());
+                modelBuilder.ApplyConfiguration(new ProductoUnidadConfiguration());
             }
             catch (Exception) { throw; }
         }

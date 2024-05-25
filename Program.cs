@@ -3,6 +3,7 @@ using PruebaColombia.Areas.CMSCore.Repositories;
 using PruebaColombia.Components.Shared;
 using PruebaColombia.Components;
 using PruebaColombia.DBContext;
+using PruebaColombia.Areas.PruebaColombia.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,12 @@ builder.Services.AddScoped<FailureRepository>();
 builder.Services.AddScoped<ParameterRepository>();
 
 //Set access to repositories: PruebaColombia
+builder.Services.AddScoped<DispensadorRepository>();
+builder.Services.AddScoped<DispensadorMangueraRepository>();
+builder.Services.AddScoped<PrecioRepository>();
+builder.Services.AddScoped<ProductoRepository>();
+builder.Services.AddScoped<ProductoTipoRepository>();
+builder.Services.AddScoped<ProductoUnidadRepository>();
 
 //Set access to StateContainer to share data between Blazor components
 builder.Services.AddScoped<StateContainer>();

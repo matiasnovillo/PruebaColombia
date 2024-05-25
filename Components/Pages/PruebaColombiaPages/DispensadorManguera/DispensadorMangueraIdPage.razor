@@ -1,0 +1,283 @@
+
+@page "/PruebaColombia/DispensadorMangueraPage/{DispensadorMangueraId:int}"
+
+@using PruebaColombia.Areas.PruebaColombia.Repositories;
+@using PruebaColombia.Areas.PruebaColombia.Entities;
+@using PruebaColombia.Areas.PruebaColombia.DTOs;
+@inject DispensadorMangueraRepository dispensadormangueraRepository;
+
+@if (DispensadorMangueraId == 0)
+{
+    <PageTitle>Agregar dispensadormanguera - PruebaColombia</PageTitle>
+}
+else
+{
+    <PageTitle>Editar dispensadormanguera - PruebaColombia</PageTitle>
+}
+
+<PruebaColombia.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></PruebaColombia.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <PruebaColombia.Components.Layout.NavBarHorizontalDashboard></PruebaColombia.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    @if(DispensadorMangueraId == 0)
+                    {
+                        <span>Agregar dispensadormanguera</span>
+                    }
+                    else
+                    {
+                        <span>Editar dispensadormanguera</span>
+                    }
+                </h1>
+                <NavLink class="btn btn-outline-info" href="PruebaColombia/DispensadorMangueraPage">
+                    <span class="fas fa-chevron-left"></span>
+                    &nbsp;Volver
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="dispensadormanguera-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Volumen-->
+                    <div class="mb-3">
+                        <label for="volumen"
+                               class="input-group input-group-static">
+                            Volumen
+                        </label>
+                        <input type="number"
+                               step="0.1"
+                               id="volumen"
+                               min="0" 
+                               max="999999999" 
+                               class="form-control"
+                               
+                               @bind="DispensadorManguera!.Volumen" />
+                    </div>
+                    <!--Nombre-->
+                    <div class="mb-3">
+                        <label for="nombre"
+                               class="input-group input-group-static">
+                            Nombre
+                        </label>
+                        <input type="text"
+                               id="nombre"
+                               class="form-control"
+                               required
+                               @bind="DispensadorManguera!.Nombre" />
+                    </div>
+                    <!--DispensadorId-->
+                    <div class="mb-3">
+                        <label for="dispensadorid"
+                               class="input-group input-group-static">
+                            DispensadorId
+                        </label>
+                        <select id="dispensadorid"
+                            class="form-control"
+                            @bind=DispensadorManguera.DispensadorId>
+                        </select>
+                    </div>
+                    <!--ProductoId-->
+                    <div class="mb-3">
+                        <label for="productoid"
+                               class="input-group input-group-static">
+                            ProductoId
+                        </label>
+                        <select id="productoid"
+                            class="form-control"
+                            @bind=DispensadorManguera.ProductoId>
+                        </select>
+                    </div>
+                    
+                    <hr />
+                    <button id="btn-submit" type="submit"
+                            class="btn bg-gradient-primary">
+                        <i class="fas fa-pen"></i>
+                        @if (DispensadorMangueraId == 0)
+                        {
+                            <span>Agregar</span>
+                        }
+                        else
+                        {
+                            <span>Editar</span>
+                        }
+                    </button>
+                    <NavLink class="btn btn-outline-info" href="PruebaColombia/DispensadorMangueraPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </form>
+                @((MarkupString)Message)
+            </div>
+        </div>
+    </div>
+
+    <PruebaColombia.Components.Layout.FooterDashboard></PruebaColombia.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int DispensadorMangueraId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public DispensadorManguera DispensadorManguera { get; set; } = new();
+
+    public User User { get; set; } = new();
+
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+            DispensadorManguera = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (DispensadorMangueraId == 0)
+                    {
+                        //Create new DispensadorManguera
+                        DispensadorManguera = new();
+                    }
+                    else
+                    {
+                        //Edit DispensadorManguera
+                        
+                        DispensadorManguera = dispensadormangueraRepository
+                                    .GetByDispensadorMangueraId(DispensadorMangueraId);
+                    }
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (DispensadorMangueraId == 0)
+            {
+                //Create new DispensadorManguera
+                DispensadorManguera.Active = true;
+                DispensadorManguera.UserCreationId = User.UserId;
+                DispensadorManguera.UserLastModificationId = User.UserId;
+                DispensadorManguera.DateTimeCreation = DateTime.Now;
+                DispensadorManguera.DateTimeLastModification = DateTime.Now;
+
+                dispensadormangueraRepository
+                        .Add(DispensadorManguera);
+            }
+            else
+            {
+                //Update data
+                DispensadorManguera.DateTimeLastModification = DateTime.Now;
+                DispensadorManguera.UserLastModificationId = User.UserId;
+
+                dispensadormangueraRepository
+                            .Update(DispensadorManguera);
+            }
+
+            //Redirect to users page
+            NavigationManager.NavigateTo("PruebaColombia/DispensadorMangueraPage");
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+

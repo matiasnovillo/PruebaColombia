@@ -1,0 +1,268 @@
+
+@page "/PruebaColombia/ProductoPage/{ProductoId:int}"
+
+@using PruebaColombia.Areas.PruebaColombia.Repositories;
+@using PruebaColombia.Areas.PruebaColombia.Entities;
+@using PruebaColombia.Areas.PruebaColombia.DTOs;
+@inject ProductoRepository productoRepository;
+
+@if (ProductoId == 0)
+{
+    <PageTitle>Agregar producto - PruebaColombia</PageTitle>
+}
+else
+{
+    <PageTitle>Editar producto - PruebaColombia</PageTitle>
+}
+
+<PruebaColombia.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></PruebaColombia.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <PruebaColombia.Components.Layout.NavBarHorizontalDashboard></PruebaColombia.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    @if(ProductoId == 0)
+                    {
+                        <span>Agregar producto</span>
+                    }
+                    else
+                    {
+                        <span>Editar producto</span>
+                    }
+                </h1>
+                <NavLink class="btn btn-outline-info" href="PruebaColombia/ProductoPage">
+                    <span class="fas fa-chevron-left"></span>
+                    &nbsp;Volver
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="producto-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Name-->
+                    <div class="mb-3">
+                        <label for="name"
+                               class="input-group input-group-static">
+                            Name
+                        </label>
+                        <input type="text"
+                               id="name"
+                               class="form-control"
+                               required
+                               @bind="Producto!.Name" />
+                    </div>
+                    <!--ProductoTipoId-->
+                    <div class="mb-3">
+                        <label for="productotipoid"
+                               class="input-group input-group-static">
+                            ProductoTipoId
+                        </label>
+                        <select id="productotipoid"
+                            class="form-control"
+                            @bind=Producto.ProductoTipoId>
+                        </select>
+                    </div>
+                    <!--ProductoUnidadId-->
+                    <div class="mb-3">
+                        <label for="productounidadid"
+                               class="input-group input-group-static">
+                            ProductoUnidadId
+                        </label>
+                        <select id="productounidadid"
+                            class="form-control"
+                            @bind=Producto.ProductoUnidadId>
+                        </select>
+                    </div>
+                    
+                    <hr />
+                    <button id="btn-submit" type="submit"
+                            class="btn bg-gradient-primary">
+                        <i class="fas fa-pen"></i>
+                        @if (ProductoId == 0)
+                        {
+                            <span>Agregar</span>
+                        }
+                        else
+                        {
+                            <span>Editar</span>
+                        }
+                    </button>
+                    <NavLink class="btn btn-outline-info" href="PruebaColombia/ProductoPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </form>
+                @((MarkupString)Message)
+            </div>
+        </div>
+    </div>
+
+    <PruebaColombia.Components.Layout.FooterDashboard></PruebaColombia.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int ProductoId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public Producto Producto { get; set; } = new();
+
+    public User User { get; set; } = new();
+
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+            Producto = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (ProductoId == 0)
+                    {
+                        //Create new Producto
+                        Producto = new();
+                    }
+                    else
+                    {
+                        //Edit Producto
+                        
+                        Producto = productoRepository
+                                    .GetByProductoId(ProductoId);
+                    }
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (ProductoId == 0)
+            {
+                //Create new Producto
+                Producto.Active = true;
+                Producto.UserCreationId = User.UserId;
+                Producto.UserLastModificationId = User.UserId;
+                Producto.DateTimeCreation = DateTime.Now;
+                Producto.DateTimeLastModification = DateTime.Now;
+
+                productoRepository
+                        .Add(Producto);
+            }
+            else
+            {
+                //Update data
+                Producto.DateTimeLastModification = DateTime.Now;
+                Producto.UserLastModificationId = User.UserId;
+
+                productoRepository
+                            .Update(Producto);
+            }
+
+            //Redirect to users page
+            NavigationManager.NavigateTo("PruebaColombia/ProductoPage");
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+

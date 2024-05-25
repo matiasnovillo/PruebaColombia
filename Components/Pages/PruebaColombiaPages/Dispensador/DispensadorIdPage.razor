@@ -1,0 +1,261 @@
+
+@page "/PruebaColombia/DispensadorPage/{DispensadorId:int}"
+
+@using PruebaColombia.Areas.PruebaColombia.Repositories;
+@using PruebaColombia.Areas.PruebaColombia.Entities;
+@using PruebaColombia.Areas.PruebaColombia.DTOs;
+@inject DispensadorRepository dispensadorRepository;
+
+@if (DispensadorId == 0)
+{
+    <PageTitle>Agregar dispensador - PruebaColombia</PageTitle>
+}
+else
+{
+    <PageTitle>Editar dispensador - PruebaColombia</PageTitle>
+}
+
+<PruebaColombia.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></PruebaColombia.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <PruebaColombia.Components.Layout.NavBarHorizontalDashboard></PruebaColombia.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card card-body mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h1 class="mb-3">
+                    @if(DispensadorId == 0)
+                    {
+                        <span>Agregar dispensador</span>
+                    }
+                    else
+                    {
+                        <span>Editar dispensador</span>
+                    }
+                </h1>
+                <NavLink class="btn btn-outline-info" href="PruebaColombia/DispensadorPage">
+                    <span class="fas fa-chevron-left"></span>
+                    &nbsp;Volver
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                <form method="post" @onsubmit="Submit"
+                      @formname="dispensador-form" class="mb-4">
+                    <AntiforgeryToken />
+                    <!--Nombre-->
+                    <div class="mb-3">
+                        <label for="nombre"
+                               class="input-group input-group-static">
+                            Nombre
+                        </label>
+                        <input type="text"
+                               id="nombre"
+                               class="form-control"
+                               required
+                               @bind="Dispensador!.Nombre" />
+                    </div>
+                    <!--CantidadDeManguera-->
+                    <div class="mb-3">
+                        <label for="cantidaddemanguera"
+                               class="input-group input-group-static">
+                            CantidadDeManguera
+                        </label>
+                        <input type="number"
+                               step="1"
+                               min="0" 
+                               max="1000" 
+                               id="cantidaddemanguera"
+                               class="form-control"
+                               required
+                               @bind="Dispensador!.CantidadDeManguera" />
+                    </div>
+                    
+                    <hr />
+                    <button id="btn-submit" type="submit"
+                            class="btn bg-gradient-primary">
+                        <i class="fas fa-pen"></i>
+                        @if (DispensadorId == 0)
+                        {
+                            <span>Agregar</span>
+                        }
+                        else
+                        {
+                            <span>Editar</span>
+                        }
+                    </button>
+                    <NavLink class="btn btn-outline-info" href="PruebaColombia/DispensadorPage">
+                        <span class="fas fa-chevron-left"></span>
+                        &nbsp;Volver
+                    </NavLink>
+                </form>
+                @((MarkupString)Message)
+            </div>
+        </div>
+    </div>
+
+    <PruebaColombia.Components.Layout.FooterDashboard></PruebaColombia.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    #region Properties
+    public List<folderForDashboard> lstFoldersAndPages = [];
+
+    public List<Role> lstRole { get; set; } = [];
+
+    [Parameter]
+    public int DispensadorId { get; set; }
+
+    public string Message { get; set; } = "";
+
+    [SupplyParameterFromForm]
+    public Dispensador Dispensador { get; set; } = new();
+
+    public User User { get; set; } = new();
+
+    
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+            Dispensador = new();
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                        .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    lstRole = roleRepository.GetAll();
+
+                    if (DispensadorId == 0)
+                    {
+                        //Create new Dispensador
+                        Dispensador = new();
+                    }
+                    else
+                    {
+                        //Edit Dispensador
+                        
+                        Dispensador = dispensadorRepository
+                                    .GetByDispensadorId(DispensadorId);
+                    }
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            if (DispensadorId == 0)
+            {
+                //Create new Dispensador
+                Dispensador.Active = true;
+                Dispensador.UserCreationId = User.UserId;
+                Dispensador.UserLastModificationId = User.UserId;
+                Dispensador.DateTimeCreation = DateTime.Now;
+                Dispensador.DateTimeLastModification = DateTime.Now;
+
+                dispensadorRepository
+                        .Add(Dispensador);
+            }
+            else
+            {
+                //Update data
+                Dispensador.DateTimeLastModification = DateTime.Now;
+                Dispensador.UserLastModificationId = User.UserId;
+
+                dispensadorRepository
+                            .Update(Dispensador);
+            }
+
+            //Redirect to users page
+            NavigationManager.NavigateTo("PruebaColombia/DispensadorPage");
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+
+            Message = $@"<div class=""alert alert-danger text-white font-weight-bold"" role=""alert"">
+                                Hubo un error. Intente nuevamente. Mensaje del error: {ex.Message}
+                            </div>";
+        }
+        finally
+        {
+            //Re-render the page to show ScannedText
+            await InvokeAsync(() => StateHasChanged()).ConfigureAwait(false);
+        }
+    }
+
+    
+}
+
