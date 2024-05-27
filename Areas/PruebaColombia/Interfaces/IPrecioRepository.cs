@@ -26,7 +26,7 @@ namespace PruebaColombia.Areas.PruebaColombia.Interfaces
 
         List<Precio?> GetAll();
 
-        paginatedPrecioDTO GetAllByPrecioIdPaginated(string textToSearch,
+        paginatedPrecioDTO GetAllByValorPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
             int pageSize);

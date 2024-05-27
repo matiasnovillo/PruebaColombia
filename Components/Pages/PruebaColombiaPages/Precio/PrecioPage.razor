@@ -38,7 +38,7 @@
                         <!--Searchbox-->
                         <input type="search" @oninput="SearchText"
                                class="form-control"
-                               placeholder="Buscar precio por PrecioId..." />
+                               placeholder="Buscar por precio..." />
                         <br />
                         <!--Strict or lax search-->
                         <div>
@@ -137,14 +137,10 @@
                     <table class="table table-striped table-hover table-bordered table-responsive mt-4">
                         <thead>
                             <tr>
-                                <th>PrecioId</th>
-                                <th>Active</th>
-                                <th>DateTimeCreation</th>
-                                <th>DateTimeLastModification</th>
-                                <th>UserCreationId</th>
-                                <th>UserLastModificationId</th>
+                                <th>ID</th>
+                                <th>Fecha</th>
                                 <th>Valor</th>
-                                <th>ProductoId</th>
+                                <th>Producto</th>
                                 
                                 <th>Acciones</th>
                             </tr>
@@ -158,24 +154,9 @@
 
                                     <tr>
                                         <td>@paginatedPrecioDTO.lstPrecio[i]?.PrecioId</td>
-                                        @if (@paginatedPrecioDTO.lstPrecio[i]!.Active)
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-success">Sí</span>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-danger">No</span>
-                                            </td>
-                                        }
                                         <td>@paginatedPrecioDTO.lstPrecio[i]?.DateTimeCreation</td>
-                                        <td>@paginatedPrecioDTO.lstPrecio[i]?.DateTimeLastModification</td>
-                                        <td>@paginatedPrecioDTO.lstPrecio[i]?.UserCreationId</td>
-                                        <td>@paginatedPrecioDTO.lstPrecio[i]?.UserLastModificationId</td>
                                         <td>@paginatedPrecioDTO.lstPrecio[i]?.Valor</td>
-                                        <td>@paginatedPrecioDTO.lstPrecio[i]?.ProductoId</td>
+                                        <td>@paginatedPrecioDTO.lstProducto[i]?.Name</td>
                                         
                                         <td>
                                             <div class="nav-item">
@@ -207,31 +188,10 @@
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
-                                        <p><b>PrecioId: </b>@paginatedPrecioDTO.lstPrecio[i]?.PrecioId</p>
-                                        @if (@paginatedPrecioDTO.lstPrecio[i]!.Active)
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-success">
-                                                    Sí
-                                                </span>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-danger">
-                                                    No
-                                                </span>
-                                            </p>
-                                        }
-                                        <p><b>DateTimeCreation: </b>@paginatedPrecioDTO.lstPrecio[i]?.DateTimeCreation</p>
-                                        <p><b>DateTimeLastModification: </b>@paginatedPrecioDTO.lstPrecio[i]?.DateTimeLastModification</p>
-                                        <p><b>UserCreationId: </b>@paginatedPrecioDTO.lstPrecio[i]?.UserCreationId</p>
-                                        <p><b>UserLastModificationId: </b>@paginatedPrecioDTO.lstPrecio[i]?.UserLastModificationId</p>
+                                        <p><b>ID: </b>@paginatedPrecioDTO.lstPrecio[i]?.PrecioId</p>
+                                        <p><b>Fecha: </b>@paginatedPrecioDTO.lstPrecio[i]?.DateTimeCreation</p>
                                         <p><b>Valor: </b>@paginatedPrecioDTO.lstPrecio[i]?.Valor</p>
-                                        <p><b>ProductoId: </b>@paginatedPrecioDTO.lstPrecio[i]?.ProductoId</p>
+                                        <p><b>Producto: </b>@paginatedPrecioDTO.lstProducto[i]?.Name</p>
                                         
                                 </div>
                                 <div class="card-footer text-body-secondary">
@@ -351,7 +311,7 @@
                                             .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
 
                     paginatedPrecioDTO = precioRepository
-                                                .GetAllByPrecioIdPaginated(
+                                                .GetAllByValorPaginated(
                                                     "",
                                                     checkStrict,
                                                     1,
@@ -413,7 +373,7 @@
             TextToSearch = args.Value.ToString();
 
             paginatedPrecioDTO = precioRepository
-                                        .GetAllByPrecioIdPaginated(
+                                        .GetAllByValorPaginated(
                                             TextToSearch,
                                             checkStrict,
                                             1,
@@ -455,7 +415,7 @@
         if (paginatedPrecioDTO.HasPreviousPage)
         {
             paginatedPrecioDTO = precioRepository
-                                        .GetAllByPrecioIdPaginated(
+                                        .GetAllByValorPaginated(
                                             TextToSearch,
                                             checkStrict,
                                             (paginatedPrecioDTO.PageIndex - 1),
@@ -472,7 +432,7 @@
     private async Task OnPageSelected(int pageIndex)
     {
         paginatedPrecioDTO = precioRepository
-                                            .GetAllByPrecioIdPaginated(
+                                            .GetAllByValorPaginated(
                                                 TextToSearch,
                                                 checkStrict,
                                                 pageIndex,
@@ -490,7 +450,7 @@
         if (paginatedPrecioDTO.HasNextPage)
         {
             paginatedPrecioDTO = precioRepository
-                                        .GetAllByPrecioIdPaginated(
+                                        .GetAllByValorPaginated(
                                             TextToSearch,
                                             checkStrict,
                                             (paginatedPrecioDTO.PageIndex + 1),
@@ -519,7 +479,7 @@
             precioRepository.DeleteByPrecioId(precioId);
 
             paginatedPrecioDTO = precioRepository
-                                        .GetAllByPrecioIdPaginated(
+                                        .GetAllByValorPaginated(
                                             TextToSearch,
                                             checkStrict,
                                             1,

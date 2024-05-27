@@ -19,6 +19,7 @@ namespace PruebaColombia.Areas.PruebaColombia.DTOs
         public List<Precio?> lstPrecio { get; set; }
         public List<User?> lstUserCreation { get; set; }
         public List<User?> lstUserLastModification { get; set; }
+        public List<Producto?> lstProducto { get; set; }
         public int TotalItems { get; set; }
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
