@@ -67,7 +67,7 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
             catch (Exception) { throw; }
         }
 
-        public paginatedDispensadorMangueraDTO GetAllByDispensadorMangueraIdPaginated(string textToSearch,
+        public paginatedDispensadorMangueraDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
             int pageSize)
@@ -85,17 +85,21 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
                 var query = from dispensadormanguera in _context.DispensadorManguera
                             join userCreation in _context.User on dispensadormanguera.UserCreationId equals userCreation.UserId
                             join userLastModification in _context.User on dispensadormanguera.UserLastModificationId equals userLastModification.UserId
-                            select new { DispensadorManguera = dispensadormanguera, UserCreation = userCreation, UserLastModification = userLastModification };
+                            join producto in _context.Producto on dispensadormanguera.ProductoId equals producto.ProductoId
+                            join dispensador in _context.Dispensador on dispensadormanguera.DispensadorId equals dispensador.DispensadorId
+                            select new { Producto = producto, Dispensador = dispensador, DispensadorManguera = dispensadormanguera, UserCreation = userCreation, UserLastModification = userLastModification };
 
                 // Extraemos los resultados en listas separadas
                 List<DispensadorManguera> lstDispensadorManguera = query.Select(result => result.DispensadorManguera)
                         .Where(x => strictSearch ?
-                            words.All(word => x.DispensadorMangueraId.ToString().Contains(word)) :
-                            words.Any(word => x.DispensadorMangueraId.ToString().Contains(word)))
+                            words.All(word => x.Nombre.Contains(word)) :
+                            words.Any(word => x.Nombre.Contains(word)))
                         .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<Producto> lstProducto = query.Select(result => result.Producto).ToList();
+                List<Dispensador> lstDispensador = query.Select(result => result.Dispensador).ToList();
                 List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
                 List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
 
@@ -104,6 +108,8 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
                     lstDispensadorManguera = lstDispensadorManguera,
                     lstUserCreation = lstUserCreation,
                     lstUserLastModification = lstUserLastModification,
+                    lstProducto = lstProducto,
+                    lstDispensador = lstDispensador,
                     TotalItems = TotalDispensadorManguera,
                     PageIndex = pageIndex,
                     PageSize = pageSize

@@ -38,7 +38,7 @@
                         <!--Searchbox-->
                         <input type="search" @oninput="SearchText"
                                class="form-control"
-                               placeholder="Buscar dispensador por DispensadorId..." />
+                               placeholder="Buscar por nombre..." />
                         <br />
                         <!--Strict or lax search-->
                         <div>
@@ -137,14 +137,9 @@
                     <table class="table table-striped table-hover table-bordered table-responsive mt-4">
                         <thead>
                             <tr>
-                                <th>DispensadorId</th>
-                                <th>Active</th>
-                                <th>DateTimeCreation</th>
-                                <th>DateTimeLastModification</th>
-                                <th>UserCreationId</th>
-                                <th>UserLastModificationId</th>
+                                <th>ID</th>
                                 <th>Nombre</th>
-                                <th>CantidadDeManguera</th>
+                                <th>Cantidad de mangueras</th>
                                 
                                 <th>Acciones</th>
                             </tr>
@@ -158,22 +153,6 @@
 
                                     <tr>
                                         <td>@paginatedDispensadorDTO.lstDispensador[i]?.DispensadorId</td>
-                                        @if (@paginatedDispensadorDTO.lstDispensador[i]!.Active)
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-success">Sí</span>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-danger">No</span>
-                                            </td>
-                                        }
-                                        <td>@paginatedDispensadorDTO.lstDispensador[i]?.DateTimeCreation</td>
-                                        <td>@paginatedDispensadorDTO.lstDispensador[i]?.DateTimeLastModification</td>
-                                        <td>@paginatedDispensadorDTO.lstDispensador[i]?.UserCreationId</td>
-                                        <td>@paginatedDispensadorDTO.lstDispensador[i]?.UserLastModificationId</td>
                                         <td>@paginatedDispensadorDTO.lstDispensador[i]?.Nombre</td>
                                         <td>@paginatedDispensadorDTO.lstDispensador[i]?.CantidadDeManguera</td>
                                         
@@ -207,31 +186,9 @@
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
-                                        <p><b>DispensadorId: </b>@paginatedDispensadorDTO.lstDispensador[i]?.DispensadorId</p>
-                                        @if (@paginatedDispensadorDTO.lstDispensador[i]!.Active)
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-success">
-                                                    Sí
-                                                </span>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-danger">
-                                                    No
-                                                </span>
-                                            </p>
-                                        }
-                                        <p><b>DateTimeCreation: </b>@paginatedDispensadorDTO.lstDispensador[i]?.DateTimeCreation</p>
-                                        <p><b>DateTimeLastModification: </b>@paginatedDispensadorDTO.lstDispensador[i]?.DateTimeLastModification</p>
-                                        <p><b>UserCreationId: </b>@paginatedDispensadorDTO.lstDispensador[i]?.UserCreationId</p>
-                                        <p><b>UserLastModificationId: </b>@paginatedDispensadorDTO.lstDispensador[i]?.UserLastModificationId</p>
+                                        <p><b>ID: </b>@paginatedDispensadorDTO.lstDispensador[i]?.DispensadorId</p>
                                         <p><b>Nombre: </b>@paginatedDispensadorDTO.lstDispensador[i]?.Nombre</p>
-                                        <p><b>CantidadDeManguera: </b>@paginatedDispensadorDTO.lstDispensador[i]?.CantidadDeManguera</p>
+                                        <p><b>Cantidad de mangueras: </b>@paginatedDispensadorDTO.lstDispensador[i]?.CantidadDeManguera</p>
                                         
                                 </div>
                                 <div class="card-footer text-body-secondary">

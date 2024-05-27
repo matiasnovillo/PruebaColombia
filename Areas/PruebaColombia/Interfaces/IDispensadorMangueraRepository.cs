@@ -26,7 +26,7 @@ namespace PruebaColombia.Areas.PruebaColombia.Interfaces
 
         List<DispensadorManguera?> GetAll();
 
-        paginatedDispensadorMangueraDTO GetAllByDispensadorMangueraIdPaginated(string textToSearch,
+        paginatedDispensadorMangueraDTO GetAllByNamePaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,
             int pageSize);

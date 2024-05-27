@@ -6,7 +6,7 @@
 @using PruebaColombia.Areas.PruebaColombia.DTOs;
 @inject DispensadorMangueraRepository dispensadormangueraRepository;
 
-<PageTitle>Buscar DispensadorManguera - PruebaColombia</PageTitle>
+<PageTitle>Buscar manguera - PruebaColombia</PageTitle>
 
 <PruebaColombia.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></PruebaColombia.Components.Layout.NavBarVerticalDashboard>
 
@@ -20,7 +20,7 @@
         <div class="card card-body mx-3 mx-md-4 mt-n6">
             <div class="card-header mb-0 pb-0 bg-white">
                 <h1 class="mb-3">
-                    Buscar dispensadormanguera
+                    Buscar manguera
                 </h1>
                 <NavLink class="btn btn-outline-info" href="Dashboard">
                     <span class="fas fa-chevron-left" aria-hidden="true"></span>
@@ -28,7 +28,7 @@
                 </NavLink>
                 <NavLink class="btn btn-success text-white" href="PruebaColombia/DispensadorMangueraPage/0">
                     <span class="fas fa-plus" aria-hidden="true"></span>
-                    &nbsp;Crear dispensadormanguera
+                    &nbsp;Crear manguera
                 </NavLink>
             </div>
             <div class="card-body px-0">
@@ -38,7 +38,7 @@
                         <!--Searchbox-->
                         <input type="search" @oninput="SearchText"
                                class="form-control"
-                               placeholder="Buscar dispensadormanguera por DispensadorMangueraId..." />
+                               placeholder="Buscar por nombre..." />
                         <br />
                         <!--Strict or lax search-->
                         <div>
@@ -137,15 +137,11 @@
                     <table class="table table-striped table-hover table-bordered table-responsive mt-4">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Volumen</th>
-                                <th>Active</th>
-                                <th>DateTimeCreation</th>
-                                <th>DateTimeLastModification</th>
-                                <th>UserCreationId</th>
-                                <th>UserLastModificationId</th>
                                 <th>Nombre</th>
-                                <th>DispensadorId</th>
-                                <th>ProductoId</th>
+                                <th>Dispensador</th>
+                                <th>Producto</th>
                                 
                                 <th>Acciones</th>
                             </tr>
@@ -158,26 +154,11 @@
                                     int deleteButton = @paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]!.DispensadorMangueraId;
 
                                     <tr>
+                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DispensadorMangueraId</td>
                                         <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.Volumen</td>
-                                        @if (@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]!.Active)
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-success">Sí</span>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-danger">No</span>
-                                            </td>
-                                        }
-                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DateTimeCreation</td>
-                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DateTimeLastModification</td>
-                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.UserCreationId</td>
-                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.UserLastModificationId</td>
                                         <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.Nombre</td>
-                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DispensadorId</td>
-                                        <td>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.ProductoId</td>
+                                        <td>@paginatedDispensadorMangueraDTO.lstDispensador[i]?.Nombre</td>
+                                        <td>@paginatedDispensadorMangueraDTO.lstProducto[i]?.Name</td>
                                         
                                         <td>
                                             <div class="nav-item">
@@ -209,32 +190,11 @@
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
+                                        <p><b>ID: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DispensadorMangueraId</p>
                                         <p><b>Volumen: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.Volumen</p>
-                                        @if (@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]!.Active)
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-success">
-                                                    Sí
-                                                </span>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-danger">
-                                                    No
-                                                </span>
-                                            </p>
-                                        }
-                                        <p><b>DateTimeCreation: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DateTimeCreation</p>
-                                        <p><b>DateTimeLastModification: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DateTimeLastModification</p>
-                                        <p><b>UserCreationId: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.UserCreationId</p>
-                                        <p><b>UserLastModificationId: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.UserLastModificationId</p>
                                         <p><b>Nombre: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.Nombre</p>
-                                        <p><b>DispensadorId: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.DispensadorId</p>
-                                        <p><b>ProductoId: </b>@paginatedDispensadorMangueraDTO.lstDispensadorManguera[i]?.ProductoId</p>
+                                        <p><b>Dispensador: </b>@paginatedDispensadorMangueraDTO.lstDispensador[i]?.Nombre</p>
+                                    <p><b>Producto: </b>@paginatedDispensadorMangueraDTO.lstProducto[i]?.Name</p>
                                         
                                 </div>
                                 <div class="card-footer text-body-secondary">
@@ -354,7 +314,7 @@
                                             .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
 
                     paginatedDispensadorMangueraDTO = dispensadormangueraRepository
-                                                .GetAllByDispensadorMangueraIdPaginated(
+                                                .GetAllByNamePaginated(
                                                     "",
                                                     checkStrict,
                                                     1,
@@ -416,7 +376,7 @@
             TextToSearch = args.Value.ToString();
 
             paginatedDispensadorMangueraDTO = dispensadormangueraRepository
-                                        .GetAllByDispensadorMangueraIdPaginated(
+                                        .GetAllByNamePaginated(
                                             TextToSearch,
                                             checkStrict,
                                             1,
@@ -458,7 +418,7 @@
         if (paginatedDispensadorMangueraDTO.HasPreviousPage)
         {
             paginatedDispensadorMangueraDTO = dispensadormangueraRepository
-                                        .GetAllByDispensadorMangueraIdPaginated(
+                                        .GetAllByNamePaginated(
                                             TextToSearch,
                                             checkStrict,
                                             (paginatedDispensadorMangueraDTO.PageIndex - 1),
@@ -475,7 +435,7 @@
     private async Task OnPageSelected(int pageIndex)
     {
         paginatedDispensadorMangueraDTO = dispensadormangueraRepository
-                                            .GetAllByDispensadorMangueraIdPaginated(
+                                            .GetAllByNamePaginated(
                                                 TextToSearch,
                                                 checkStrict,
                                                 pageIndex,
@@ -493,7 +453,7 @@
         if (paginatedDispensadorMangueraDTO.HasNextPage)
         {
             paginatedDispensadorMangueraDTO = dispensadormangueraRepository
-                                        .GetAllByDispensadorMangueraIdPaginated(
+                                        .GetAllByNamePaginated(
                                             TextToSearch,
                                             checkStrict,
                                             (paginatedDispensadorMangueraDTO.PageIndex + 1),
@@ -522,7 +482,7 @@
             dispensadormangueraRepository.DeleteByDispensadorMangueraId(dispensadormangueraId);
 
             paginatedDispensadorMangueraDTO = dispensadormangueraRepository
-                                        .GetAllByDispensadorMangueraIdPaginated(
+                                        .GetAllByNamePaginated(
                                             TextToSearch,
                                             checkStrict,
                                             1,

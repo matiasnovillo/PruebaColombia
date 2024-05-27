@@ -5,6 +5,8 @@
 @using PruebaColombia.Areas.PruebaColombia.Entities;
 @using PruebaColombia.Areas.PruebaColombia.DTOs;
 @inject DispensadorMangueraRepository dispensadormangueraRepository;
+@inject DispensadorRepository dispensadorRepository;
+@inject ProductoRepository productoRepository;
 
 @if (DispensadorMangueraId == 0)
 {
@@ -76,22 +78,32 @@ else
                     <div class="mb-3">
                         <label for="dispensadorid"
                                class="input-group input-group-static">
-                            DispensadorId
+                            Dispensador
                         </label>
                         <select id="dispensadorid"
                             class="form-control"
                             @bind=DispensadorManguera.DispensadorId>
+                            <option value="0">Seleccionar</option>
+                            @foreach(Dispensador dispensador in lstDispensador)
+                            {
+                                <option value="@dispensador.DispensadorId">@dispensador.Nombre</option>
+                            }
                         </select>
                     </div>
                     <!--ProductoId-->
                     <div class="mb-3">
                         <label for="productoid"
                                class="input-group input-group-static">
-                            ProductoId
+                            Producto
                         </label>
                         <select id="productoid"
                             class="form-control"
                             @bind=DispensadorManguera.ProductoId>
+                            <option value="0">Seleccionar</option>
+                            @foreach (Producto producto in lstProducto)
+                            {
+                                <option value="@producto.ProductoId">@producto.Name</option>
+                            }
                         </select>
                     </div>
                     
@@ -130,6 +142,10 @@ else
     [Parameter]
     public int DispensadorMangueraId { get; set; }
 
+    public List<Producto> lstProducto { get; set; } = [];
+
+    public List<Dispensador> lstDispensador { get; set; } = [];
+
     public string Message { get; set; } = "";
 
     [SupplyParameterFromForm]
@@ -137,7 +153,7 @@ else
 
     public User User { get; set; } = new();
 
-    
+
     #endregion
 
     protected override void OnInitialized()
@@ -168,6 +184,10 @@ else
 
                     lstRole = roleRepository.GetAll();
 
+                    lstDispensador = dispensadorRepository.GetAll();
+
+                    lstProducto = productoRepository.GetAll();
+
                     if (DispensadorMangueraId == 0)
                     {
                         //Create new DispensadorManguera
@@ -176,7 +196,7 @@ else
                     else
                     {
                         //Edit DispensadorManguera
-                        
+
                         DispensadorManguera = dispensadormangueraRepository
                                     .GetByDispensadorMangueraId(DispensadorMangueraId);
                     }
@@ -224,6 +244,15 @@ else
     {
         try
         {
+            if (DispensadorManguera.ProductoId == 0 || DispensadorManguera.DispensadorId == 0)
+            {
+                Message = $@"<div class=""alert alert-warning text-white font-weight-bold"" role=""alert"">
+                                Complete todos los campos para guardar.
+                            </div>";
+
+                return;
+            }
+
             if (DispensadorMangueraId == 0)
             {
                 //Create new DispensadorManguera
