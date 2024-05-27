@@ -137,15 +137,10 @@
                     <table class="table table-striped table-hover table-bordered table-responsive mt-4">
                         <thead>
                             <tr>
-                                <th>ProductoId</th>
-                                <th>Active</th>
-                                <th>DateTimeCreation</th>
-                                <th>DateTimeLastModification</th>
-                                <th>UserCreationId</th>
-                                <th>UserLastModificationId</th>
-                                <th>Name</th>
-                                <th>ProductoTipoId</th>
-                                <th>ProductoUnidadId</th>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Unidad</th>
                                 
                                 <th>Acciones</th>
                             </tr>
@@ -159,25 +154,9 @@
 
                                     <tr>
                                         <td>@paginatedProductoDTO.lstProducto[i]?.ProductoId</td>
-                                        @if (@paginatedProductoDTO.lstProducto[i]!.Active)
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-success">Sí</span>
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                <span class="badge rounded-pill bg-danger">No</span>
-                                            </td>
-                                        }
-                                        <td>@paginatedProductoDTO.lstProducto[i]?.DateTimeCreation</td>
-                                        <td>@paginatedProductoDTO.lstProducto[i]?.DateTimeLastModification</td>
-                                        <td>@paginatedProductoDTO.lstProducto[i]?.UserCreationId</td>
-                                        <td>@paginatedProductoDTO.lstProducto[i]?.UserLastModificationId</td>
                                         <td>@paginatedProductoDTO.lstProducto[i]?.Name</td>
-                                        <td>@paginatedProductoDTO.lstProducto[i]?.ProductoTipoId</td>
-                                        <td>@paginatedProductoDTO.lstProducto[i]?.ProductoUnidadId</td>
+                                        <td>@paginatedProductoDTO.lstProductoTipo[i]?.Nombre</td>
+                                        <td>@paginatedProductoDTO.lstProductoUnidad[i]?.Nombre</td>
                                         
                                         <td>
                                             <div class="nav-item">
@@ -209,32 +188,10 @@
 
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
-                                        <p><b>ProductoId: </b>@paginatedProductoDTO.lstProducto[i]?.ProductoId</p>
-                                        @if (@paginatedProductoDTO.lstProducto[i]!.Active)
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-success">
-                                                    Sí
-                                                </span>
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            <p>
-                                                <b>Active: </b>
-                                                <span class="badge rounded-pill bg-danger">
-                                                    No
-                                                </span>
-                                            </p>
-                                        }
-                                        <p><b>DateTimeCreation: </b>@paginatedProductoDTO.lstProducto[i]?.DateTimeCreation</p>
-                                        <p><b>DateTimeLastModification: </b>@paginatedProductoDTO.lstProducto[i]?.DateTimeLastModification</p>
-                                        <p><b>UserCreationId: </b>@paginatedProductoDTO.lstProducto[i]?.UserCreationId</p>
-                                        <p><b>UserLastModificationId: </b>@paginatedProductoDTO.lstProducto[i]?.UserLastModificationId</p>
-                                        <p><b>Name: </b>@paginatedProductoDTO.lstProducto[i]?.Name</p>
-                                        <p><b>ProductoTipoId: </b>@paginatedProductoDTO.lstProducto[i]?.ProductoTipoId</p>
-                                        <p><b>ProductoUnidadId: </b>@paginatedProductoDTO.lstProducto[i]?.ProductoUnidadId</p>
+                                        <p><b>ID: </b>@paginatedProductoDTO.lstProducto[i]?.ProductoId</p>
+                                        <p><b>Nombre: </b>@paginatedProductoDTO.lstProducto[i]?.Name</p>
+                                        <p><b>Tipo: </b>@paginatedProductoDTO.lstProductoTipo[i]?.Nombre</p>
+                                        <p><b>Unidad: </b>@paginatedProductoDTO.lstProductoUnidad[i]?.Nombre</p>
                                         
                                 </div>
                                 <div class="card-footer text-body-secondary">

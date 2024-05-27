@@ -135,10 +135,14 @@ loading="lazy">
             string EncryptedPassword = PruebaColombia.Library.Security
                                             .EncodeString(User.Password);
 
-            //Get user by email and password
             User = userRepository
                         .GetByEmailAndPassword(User.Email,
                         EncryptedPassword);
+
+            if (User == null)
+            {
+                User = new();
+            }
 
             if (User.UserId != 0)
             {

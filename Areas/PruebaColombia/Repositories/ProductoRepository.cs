@@ -85,17 +85,21 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
                 var query = from producto in _context.Producto
                             join userCreation in _context.User on producto.UserCreationId equals userCreation.UserId
                             join userLastModification in _context.User on producto.UserLastModificationId equals userLastModification.UserId
-                            select new { Producto = producto, UserCreation = userCreation, UserLastModification = userLastModification };
+                            join productoTipo in _context.ProductoTipo on producto.ProductoTipoId equals productoTipo.ProductoTipoId
+                            join productoUnidad in _context.ProductoUnidad on producto.ProductoUnidadId equals productoUnidad.ProductoUnidadId
+                            select new { Producto = producto, ProductoTipo = productoTipo, ProductoUnidad = productoUnidad, UserCreation = userCreation, UserLastModification = userLastModification };
 
                 // Extraemos los resultados en listas separadas
                 List<Producto> lstProducto = query.Select(result => result.Producto)
                         .Where(x => strictSearch ?
-                            words.All(word => x.ProductoId.ToString().Contains(word)) :
-                            words.Any(word => x.ProductoId.ToString().Contains(word)))
+                            words.All(word => x.Name.Contains(word)) :
+                            words.Any(word => x.Name.Contains(word)))
                         .OrderByDescending(p => p.DateTimeLastModification)
                         .Skip((pageIndex - 1) * pageSize)
                         .Take(pageSize)
                         .ToList();
+                List<ProductoTipo> lstProductoTipo = query.Select(result => result.ProductoTipo).ToList();
+                List<ProductoUnidad> lstProductoUnidad = query.Select(result => result.ProductoUnidad).ToList();
                 List<User> lstUserCreation = query.Select(result => result.UserCreation).ToList();
                 List<User> lstUserLastModification = query.Select(result => result.UserLastModification).ToList();
 
@@ -104,6 +108,8 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
                     lstProducto = lstProducto,
                     lstUserCreation = lstUserCreation,
                     lstUserLastModification = lstUserLastModification,
+                    lstProductoTipo = lstProductoTipo,
+                    lstProductoUnidad = lstProductoUnidad,
                     TotalItems = TotalProducto,
                     PageIndex = pageIndex,
                     PageSize = pageSize

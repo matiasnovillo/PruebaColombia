@@ -5,6 +5,8 @@
 @using PruebaColombia.Areas.PruebaColombia.Entities;
 @using PruebaColombia.Areas.PruebaColombia.DTOs;
 @inject ProductoRepository productoRepository;
+@inject ProductoTipoRepository productoTipoRepository;
+@inject ProductoUnidadRepository productoUnidadRepository;
 
 @if (ProductoId == 0)
 {
@@ -49,7 +51,7 @@ else
                     <div class="mb-3">
                         <label for="name"
                                class="input-group input-group-static">
-                            Name
+                            Nombre de producto
                         </label>
                         <input type="text"
                                id="name"
@@ -57,29 +59,44 @@ else
                                required
                                @bind="Producto!.Name" />
                     </div>
-                    <!--ProductoTipoId-->
-                    <div class="mb-3">
-                        <label for="productotipoid"
-                               class="input-group input-group-static">
-                            ProductoTipoId
-                        </label>
-                        <select id="productotipoid"
-                            class="form-control"
-                            @bind=Producto.ProductoTipoId>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <!--ProductoTipoId-->
+                            <div class="mb-3">
+                                <label for="productotipoid"
+                                       class="input-group input-group-static">
+                                    Tipo
+                                </label>
+                                <select id="productotipoid"
+                                        class="form-control"
+                                        @bind=Producto.ProductoTipoId>
+                                    <option value="0">Seleccionar</option>
+                                    @foreach (ProductoTipo productoTipo in lstProductoTipo)
+                                    {
+                                        <option value="@productoTipo.ProductoTipoId">@productoTipo.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <!--ProductoUnidadId-->
+                            <div class="mb-3">
+                                <label for="productounidadid"
+                                       class="input-group input-group-static">
+                                    Unidad
+                                </label>
+                                <select id="productounidadid"
+                                        class="form-control"
+                                        @bind=Producto.ProductoUnidadId>
+                                    <option value="0">Seleccionar</option>
+                                    @foreach (ProductoUnidad productoUnidad in lstProductoUnidad)
+                                    {
+                                        <option value="@productoUnidad.ProductoUnidadId">@productoUnidad.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <!--ProductoUnidadId-->
-                    <div class="mb-3">
-                        <label for="productounidadid"
-                               class="input-group input-group-static">
-                            ProductoUnidadId
-                        </label>
-                        <select id="productounidadid"
-                            class="form-control"
-                            @bind=Producto.ProductoUnidadId>
-                        </select>
-                    </div>
-                    
                     <hr />
                     <button id="btn-submit" type="submit"
                             class="btn bg-gradient-primary">
@@ -115,6 +132,10 @@ else
     [Parameter]
     public int ProductoId { get; set; }
 
+    public List<ProductoTipo> lstProductoTipo { get; set; } = [];
+
+    public List<ProductoUnidad> lstProductoUnidad { get; set; } = [];
+
     public string Message { get; set; } = "";
 
     [SupplyParameterFromForm]
@@ -122,7 +143,7 @@ else
 
     public User User { get; set; } = new();
 
-    
+
     #endregion
 
     protected override void OnInitialized()
@@ -152,6 +173,10 @@ else
                                             .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
 
                     lstRole = roleRepository.GetAll();
+
+                    lstProductoTipo = productoTipoRepository.GetAll();
+
+                    lstProductoUnidad = productoUnidadRepository.GetAll();
 
                     if (ProductoId == 0)
                     {
