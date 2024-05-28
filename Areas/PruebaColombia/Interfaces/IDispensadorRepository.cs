@@ -26,6 +26,8 @@ namespace PruebaColombia.Areas.PruebaColombia.Interfaces
 
         List<Dispensador?> GetAll();
 
+        visualizacionDeDispensadoresDTO GetAllCustom();
+
         paginatedDispensadorDTO GetAllByDispensadorIdPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex,

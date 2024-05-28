@@ -1,0 +1,194 @@
+﻿@page "/PruebaColombia/VisualizacionDeDispensadores"
+
+@using PruebaColombia.Areas.PruebaColombia.DTOs;
+@using PruebaColombia.Areas.PruebaColombia.Entities;
+@using PruebaColombia.Areas.PruebaColombia.Repositories;
+@inject DispensadorRepository dispensadorRepository;
+
+<PageTitle>Visualización de dispensadores - PruebaColombia</PageTitle>
+
+<PruebaColombia.Components.Layout.NavBarVerticalDashboard lstFoldersAndPages="lstFoldersAndPages"></PruebaColombia.Components.Layout.NavBarVerticalDashboard>
+
+<div class="main-content position-relative max-height-vh-100 h-100">
+    <PruebaColombia.Components.Layout.NavBarHorizontalDashboard></PruebaColombia.Components.Layout.NavBarHorizontalDashboard>
+    <div class="container-fluid px-2 px-md-4">
+        <div class="page-header min-height-300 border-radius-xl mt-4"
+             style="background-image: url('assets/img/illustrations/Landscape2.jpg');">
+            <span class="mask bg-gradient-primary opacity-6"></span>
+        </div>
+        <div class="card mx-3 mx-md-4 mt-n6">
+            <div class="card-header mb-0 pb-0 bg-white">
+                <h3 class="mb-3">
+                    Visualización de dispensadores
+                </h3>
+                <NavLink class="btn btn-outline-info" href="Dashboard">
+                    <span class="fas fa-chevron-left" aria-hidden="true"></span>
+                    &nbsp;Volver
+                </NavLink>
+            </div>
+            <div class="card-body px-0">
+                @if (visualizacionDeDispensadoresDTO != null)
+                {
+                    @foreach (PruebaColombia.Areas.PruebaColombia.Entities.Dispensador dispensador in visualizacionDeDispensadoresDTO.lstDispensador)
+                    {
+                        <div class="row justify-space-between py-2 mx-3">
+                            <div class="card card-plain card-blog mt-5">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card-image position-relative border-radius-lg cursor-pointer">
+                                            <div class="blur-shadow-image">
+                                                <img class="img border-radius-lg" 
+                                                src="/img/PruebaColombia/Surtidores.jpg">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 my-auto ms-md-3 mt-md-auto mt-4">
+                                        <h3 class="text-dark cursor-pointer">
+                                            @dispensador.Nombre
+                                        </h3>
+                                        <p class="text-uppercase font-weight-bold text-gradient text-info mb-2">
+                                            Cantidad de mangueras: @dispensador.CantidadDeManguera
+                                        </p>
+                                        <h6 class="text-dark cursor-pointer">
+                                            Mangueras
+                                        </h6>
+                                        @foreach(PruebaColombia.Areas.PruebaColombia.Entities.DispensadorManguera dispensadorManguera in visualizacionDeDispensadoresDTO.lstDispensadorManguera)
+                                        {
+                                            <ol>
+                                                @if (dispensadorManguera.DispensadorId == dispensador.DispensadorId)
+                                                {
+                                                    <li>
+                                                        <hr />
+                                                        <div class="d-flex justify-content-between">
+                                                            <div class="justify-content-start">
+                                                                Nombre
+                                                                <br/>
+                                                                <h3>
+                                                                    <span class="badge bg-gradient-light text-dark mt-2">
+                                                                        <i class="fas fa-gas-pump fa-xl"></i> 
+                                                                        @dispensadorManguera.Nombre
+                                                                    </span>
+                                                                </h3>
+                                                            </div>
+                                                            <div>
+                                                                Volumen
+                                                                <br/>
+                                                                <h3>
+                                                                    <span class="badge bg-gradient-info mt-1">
+                                                                        <i class="fas fa-droplet fa-xl"></i> 
+                                                                        @dispensadorManguera.Volumen L
+                                                                    </span>
+                                                                </h3>
+                                                            </div>
+                                                        </div>
+                                                        <ul>
+                                                            @for(int i = 0; i < visualizacionDeDispensadoresDTO.lstProducto.Count; i++)
+                                                            {
+                                                                <li>
+                                                                    <div class="justify-content-start mt-3">
+                                                                        <div class="d-flex justify-content-start">
+                                                                            <h5>
+                                                                                <span class="badge bg-gradient-warning text-dark">
+                                                                                    <i class="fas fa-bottle-water fa-xl"></i>
+                                                                                    Producto: @visualizacionDeDispensadoresDTO.lstProducto[i].Name
+                                                                                </span>
+                                                                            </h5>
+                                                                            <h5>
+                                                                                <span class="badge bg-gradient-success mx-3">
+                                                                                    <i class="fas fa-dollar-sign fa-xl"></i>
+                                                                                    @visualizacionDeDispensadoresDTO.lstPrecio[i].Valor
+                                                                                </span>
+                                                                            </h5>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            </ol>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <PruebaColombia.Components.Layout.FooterDashboard></PruebaColombia.Components.Layout.FooterDashboard>
+</div>
+
+@code {
+    public List<folderForDashboard> lstFoldersAndPages { get; set; } = [];
+
+    public User User = new();
+
+    public visualizacionDeDispensadoresDTO visualizacionDeDispensadoresDTO = new();
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //Look for saved user in shared component, simulates a session
+            User = StateContainer.User == null ? new() : StateContainer.User;
+
+            lstFoldersAndPages = [];
+
+            visualizacionDeDispensadoresDTO.lstDispensador = [];
+
+            if (User != null)
+            {
+                if (User.UserId != 0)
+                {
+                    //Logged user
+                    if (User.RoleId != 1) //Only Root can access
+                    {
+                        NavigationManager.NavigateTo("403");
+                    }
+
+                    List<Menu> lstMenu = menuRepository
+                                            .GetAll();
+
+                    lstFoldersAndPages = rolemenuRepository
+                                            .GetAllPagesAndFoldersForDashboardByRoleId(User.RoleId);
+
+                    visualizacionDeDispensadoresDTO = dispensadorRepository.GetAllCustom();
+                }
+                else
+                {
+                    //Not logged user
+
+                    //Redirect to...
+                    NavigationManager.NavigateTo("Login");
+                }
+            }
+            else
+            {
+                //Impossible
+            }
+
+            base.OnInitialized();
+        }
+        catch (Exception ex)
+        {
+            Failure failure = new()
+                {
+                    Active = true,
+                    DateTimeCreation = DateTime.Now,
+                    DateTimeLastModification = DateTime.Now,
+                    UserCreationId = 1,
+                    UserLastModificationId = 1,
+                    EmergencyLevel = 1,
+                    Comment = "",
+                    Message = ex.Message,
+                    Source = ex.Source,
+                    StackTrace = ex.StackTrace
+                };
+
+            failureRepository.Add(failure);
+        }
+
+    }
+}

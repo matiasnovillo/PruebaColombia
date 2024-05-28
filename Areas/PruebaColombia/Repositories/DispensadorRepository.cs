@@ -67,6 +67,64 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
             catch (Exception) { throw; }
         }
 
+        public visualizacionDeDispensadoresDTO GetAllCustom()
+        {
+            try
+            {
+                IQueryable<resultadoVisualizacionDeSurtidoresDTO> query = from dispensador in _context.Dispensador
+                            join dispensadormanguera in _context.DispensadorManguera on dispensador.DispensadorId equals dispensadormanguera.DispensadorId
+                            join producto in _context.Producto on dispensadormanguera.ProductoId equals producto.ProductoId
+                            join precio in _context.Precio on producto.ProductoId equals precio.ProductoId 
+                            select new resultadoVisualizacionDeSurtidoresDTO
+                            { 
+                                Precio = precio,
+                                Dispensador = dispensador,
+                                DispensadorManguera = dispensadormanguera,
+                                Producto = producto
+                            };
+
+                // Extraemos los resultados en listas separadas
+                List<Dispensador> lstDispensador = query.Select(result => result.Dispensador).ToList();
+
+                List<DispensadorManguera> lstDispensadorManguera = [];
+                List<Producto> lstProducto = [];
+                List<Precio> lstPrecio = [];
+
+                foreach (Dispensador dispensador in lstDispensador)
+                {
+                    lstDispensadorManguera.Add(query
+                        .Select(result => result.DispensadorManguera)
+                        .Where(x => x.DispensadorId == dispensador.DispensadorId)
+                        .FirstOrDefault());
+                }
+
+                foreach (DispensadorManguera dispensadorManguera in lstDispensadorManguera)
+                {
+                    lstProducto.Add(query
+                        .Select(result => result.Producto)
+                        .Where(x => x.ProductoId == dispensadorManguera.ProductoId)
+                        .FirstOrDefault());
+                }
+
+                foreach (Producto producto in lstProducto)
+                {
+                    lstPrecio.Add(query
+                        .Select(result => result.Precio)
+                        .Where(x => x.ProductoId == producto.ProductoId)
+                        .FirstOrDefault());
+                }
+
+                return new visualizacionDeDispensadoresDTO
+                {
+                    lstDispensador = lstDispensador,
+                    lstDispensadorManguera = lstDispensadorManguera,
+                    lstPrecio = lstPrecio,
+                    lstProducto = lstProducto
+                };
+            }
+            catch (Exception) { throw; }
+        }
+
         public paginatedDispensadorDTO GetAllByDispensadorIdPaginated(string textToSearch,
             bool strictSearch,
             int pageIndex, 
