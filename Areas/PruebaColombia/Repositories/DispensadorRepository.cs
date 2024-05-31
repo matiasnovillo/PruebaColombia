@@ -6,6 +6,7 @@ using PruebaColombia.Areas.PruebaColombia.DTOs;
 using PruebaColombia.Areas.PruebaColombia.Interfaces;
 using System.Data;
 using PruebaColombia.DBContext;
+using Irony.Parsing;
 
 /*
  * GUID:e6c09dfe-3a3e-461b-b3f9-734aee05fc7b
@@ -71,55 +72,46 @@ namespace PruebaColombia.Areas.PruebaColombia.Repositories
         {
             try
             {
-                IQueryable<resultadoVisualizacionDeSurtidoresDTO> query = from dispensador in _context.Dispensador
-                            join dispensadormanguera in _context.DispensadorManguera on dispensador.DispensadorId equals dispensadormanguera.DispensadorId
+                List<Dispensador> lstDispensador = _context.Dispensador.ToList();
+
+                //Obtener los ID de cada dispensador
+                List<int> lstDispensadorID = lstDispensador.Select(x => x.DispensadorId).ToList();
+
+                List<DispensadorManguera> lstDispensadorManguera = _context.DispensadorManguera
+                    .Where(x => lstDispensadorID.Contains(x.DispensadorId))
+                    .ToList();
+
+                var queryProducto = from dispensadormanguera in lstDispensadorManguera
                             join producto in _context.Producto on dispensadormanguera.ProductoId equals producto.ProductoId
-                            join precio in _context.Precio on producto.ProductoId equals precio.ProductoId 
-                            select new resultadoVisualizacionDeSurtidoresDTO
-                            { 
-                                Precio = precio,
-                                Dispensador = dispensador,
-                                DispensadorManguera = dispensadormanguera,
+                            select new
+                            {
                                 Producto = producto
                             };
 
-                // Extraemos los resultados en listas separadas
-                List<Dispensador> lstDispensador = query.Select(result => result.Dispensador).ToList();
+                List<Producto> lstProducto = queryProducto.Select(result => result.Producto).ToList();
 
-                List<DispensadorManguera> lstDispensadorManguera = [];
-                List<Producto> lstProducto = [];
-                List<Precio> lstPrecio = [];
+                List<productoPrecioDTO> lstProductoPrecioDTO = [];
 
-                foreach (Dispensador dispensador in lstDispensador)
+                for (int i = 0; i < lstProducto.Count; i++)
                 {
-                    lstDispensadorManguera.Add(query
-                        .Select(result => result.DispensadorManguera)
-                        .Where(x => x.DispensadorId == dispensador.DispensadorId)
-                        .FirstOrDefault());
-                }
+                    Precio Precio = _context.Precio.Where(x => x.ProductoId == lstProducto[i].ProductoId).FirstOrDefault();
 
-                foreach (DispensadorManguera dispensadorManguera in lstDispensadorManguera)
-                {
-                    lstProducto.Add(query
-                        .Select(result => result.Producto)
-                        .Where(x => x.ProductoId == dispensadorManguera.ProductoId)
-                        .FirstOrDefault());
-                }
+                    productoPrecioDTO productoPrecioDTO = new()
+                    {
+                        ProductoId = lstProducto[i].ProductoId,
+                        NombreProducto = lstProducto[i].Name,
+                        Valor = Precio.Valor,
+                        DispensadorMangueraId = lstDispensadorManguera[i].DispensadorMangueraId
+                    };
 
-                foreach (Producto producto in lstProducto)
-                {
-                    lstPrecio.Add(query
-                        .Select(result => result.Precio)
-                        .Where(x => x.ProductoId == producto.ProductoId)
-                        .FirstOrDefault());
+                    lstProductoPrecioDTO.Add(productoPrecioDTO);
                 }
 
                 return new visualizacionDeDispensadoresDTO
                 {
                     lstDispensador = lstDispensador,
                     lstDispensadorManguera = lstDispensadorManguera,
-                    lstPrecio = lstPrecio,
-                    lstProducto = lstProducto
+                    productoPrecioDTO = lstProductoPrecioDTO
                 };
             }
             catch (Exception) { throw; }
