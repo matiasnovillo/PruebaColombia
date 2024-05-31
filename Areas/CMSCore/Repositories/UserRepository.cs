@@ -162,6 +162,7 @@ namespace PruebaColombia.Areas.CMSCore.Repositories
             return  _context.User.AsQueryable()
                 .Where(u => u.Password == password)
                 .Where(u => u.Email == email)
+                .Where(u => u.Active == true)
                 .FirstOrDefault();
         }
         #endregion

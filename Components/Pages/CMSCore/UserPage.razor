@@ -213,6 +213,24 @@
                             <div class="card shadow-lg mt-2">
                                 <div class="card-body">
                                     <p><b>ID: </b>@paginatedUserDTO.lstUser[i]?.UserId</p>
+                                    @if (@paginatedUserDTO.lstUser[i]!.Active)
+                                    {
+                                        <p>
+                                            <b>Activo: </b>
+                                            <span class="badge rounded-pill bg-success">
+                                                Sí
+                                            </span>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p>
+                                            <b>Activo: </b>
+                                            <span class="badge rounded-pill bg-danger">
+                                                No
+                                            </span>
+                                        </p>
+                                    }
                                     <p><b>Fecha de creación: </b>@paginatedUserDTO.lstUser[i]?.DateTimeCreation</p>
                                     <p><b>Fecha de última modificación: </b>@paginatedUserDTO.lstUser[i]?.DateTimeLastModification</p>
                                     <p><b>Usuario creador: </b>@paginatedUserDTO.lstUserCreation[i]?.Email</p>
